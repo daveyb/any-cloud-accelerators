@@ -18,7 +18,8 @@ RUN apt-get update && apt-get install -y -qq \
     ruby \
     flex \
     bison \
-    curl
+    curl \
+    libyaml-dev
 
 WORKDIR ${BUILDPATH}
 RUN if [ "$VERSION" = "latest" ]; \
