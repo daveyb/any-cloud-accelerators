@@ -21,9 +21,12 @@ RUN apt-get update && apt-get install -y -qq \
     curl
 
 WORKDIR ${BUILDPATH}
+# Ruby 4 tags are dotted (v4.0.7). Ruby 3 tags use underscores (v3_4_11).
 RUN if [ "$VERSION" = "latest" ]; \
     then git clone https://github.com/ruby/ruby.git --branch master --single-branch $BUILDPATH; \
-    else git clone https://github.com/ruby/ruby.git --branch v$(echo $VERSION | sed -e 's/\./\_/g') --single-branch $BUILDPATH; \
+    elif git ls-remote --exit-code https://github.com/ruby/ruby.git "refs/tags/v${VERSION}" >/dev/null; \
+    then git clone https://github.com/ruby/ruby.git --branch "v${VERSION}" --single-branch $BUILDPATH; \
+    else git clone https://github.com/ruby/ruby.git --branch v$(echo $VERSION | sed -e 's/\./_/g') --single-branch $BUILDPATH; \
     fi
 
 WORKDIR ${BUILDPATH}

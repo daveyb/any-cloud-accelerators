@@ -15,7 +15,9 @@ RUN apt-get update -qq && apt-get install -y -qq \
 COPY --from=openssl ${OPENSSLPATH} ${OPENSSLPATH}
 
 WORKDIR /usr/local/src
-RUN curl -L -O https://download.clis.cloud.ibm.com/ibm-cloud-cli/${VERSION}/binaries/${ARCHIVE}
+# 2.48.0 and newer publish only on ibm-cloud-cli-dn. Older releases stay on ibm-cloud-cli.
+RUN curl -fL -O "https://download.clis.cloud.ibm.com/ibm-cloud-cli-dn/${VERSION}/binaries/${ARCHIVE}" \
+    || curl -fL -O "https://download.clis.cloud.ibm.com/ibm-cloud-cli/${VERSION}/binaries/${ARCHIVE}"
 RUN mkdir ${BINPATH} \
     && tar xzf ${ARCHIVE} -C ${BINPATH} --strip-components 1
 
