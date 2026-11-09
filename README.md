@@ -17,20 +17,20 @@ All of the VARS in the Makefile can be overridden with environment variables fro
 
 For example:
 ```
-export TERRAFORM_VERSION=0.13.4
+export TERRAFORM_VERSION=1.16.6
 make terraform
 ```
-Will build `aca-terraform:0.13.4`.
+Will build `aca-terraform:1.16.6`.
 
 This is powerful when combined with other tools such as [direnv](https://direnv.net) which allow you to export environment variables per directory. This allows you to have customized accelerators per project!
 
 Typically I will clone this repo only once, then symlink it into each project directory where I'm leveraging direnv. That way I can simply `make <accelerator>` from within that project directory with the environment variable overrides I want for that project, e.g. from a project directory:
 ```
-ln -s ~/Dev/github/dbenedic-insight/any-cloud-accelerators/Makefile .
+ln -s ~/Dev/github/daveyb/any-cloud-accelerators/Makefile .
 
-ln -s ~/Dev/github/dbenedic-insight/any-cloud-accelerators/common .
+ln -s ~/Dev/github/daveyb/any-cloud-accelerators/common .
 
-ln -s ~/Dev/github/dbenedic-insight/any-cloud-accelerators/azure .
+ln -s ~/Dev/github/daveyb/any-cloud-accelerators/azure .
 
 make az-tf-dev
 ```
@@ -48,3 +48,8 @@ In this repo, all the Dockerfiles are built off of the image created by `common/
 It was done this way so that if the base image was changed, it would trigger changes on everything built on top of it.
 
 The components that make up a new Dockerfile can be pulled from these images in [multi-stage container builds](https://docs.docker.com/develop/develop-images/multistage-build/). This was done intentionally. All components are not included in the base image in order to keep container sizes down. Rule of thumb: if you need something in your container, pull it from one of these intermediate containers, don't just throw everything into one giant container.
+
+## Notes
+- Base image is Ubuntu 26.04; the default build platform is `linux/arm64` (override with `PLATFORM`, e.g. `PLATFORM=linux/amd64`).
+- OpenSSL is configured with `--libdir=lib` so x86_64 and arm64 installs agree with the base image `LD_LIBRARY_PATH` (`${OPENSSLPATH}/lib`).
+- `PACKER_VERSION` defaults to `latest`.

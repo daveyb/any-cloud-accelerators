@@ -1,0 +1,26 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      PLATFORM: linux/amd64
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Default make target
+        run: make
+
+      - name: Build base and openssl images
+        run: make base openssl
+
+      - name: Verify openssl installs into lib/
+        run: |
+          TAG="aca-openssl:$(grep '^OPENSSL_VERSION' Makefile | awk '{print $3}' | tr -d '\r')"
+          docker run --rm --entrypoint /usr/bin/ls "$TAG" /usr/local/src/openssl/lib | grep -q libssl
+          docker run --rm --entrypoint /usr/bin/test "$TAG" ! -e /usr/local/src/openssl/lib64

@@ -17,7 +17,8 @@ RUN sha256sum -c ${ARCHIVE}.sha256
 RUN tar xzf $ARCHIVE
 
 WORKDIR /usr/local/src/openssl-${VERSION}
-RUN ./config --prefix=${OPENSSLPATH} --openssldir=${OPENSSLPATH} \
+# x86_64 ./config installs into lib64. The base image sets LD_LIBRARY_PATH to ${OPENSSLPATH}/lib.
+RUN ./config --prefix=${OPENSSLPATH} --openssldir=${OPENSSLPATH} --libdir=lib \
     && make \
     && make install_sw
 RUN ldconfig
